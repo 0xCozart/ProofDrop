@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gasless ProofDrop</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-state="wallet-not-connected">
+    <main class="shell">
+      <section class="claim-surface" aria-labelledby="title">
+        <div class="claim-copy">
+          <p class="mode" data-mode-label data-state="mock-local-mode-active">Mock/local mode active</p>
+          <h1 id="title">Gasless ProofDrop</h1>
+          <p class="lede">Claim an IOTA testnet proof badge without holding IOTA. You sign; GasKit sponsors the gas.</p>
+          <div class="wallet-panel">
+            <label for="walletAddress">Wallet connection state</label>
+            <div class="wallet-row">
+              <input id="walletAddress" name="walletAddress" autocomplete="off" placeholder="0x wallet address" />
+              <button id="connectWallet" type="button">Connect mock wallet</button>
+            </div>
+            <p data-wallet-status>wallet-not-connected</p>
+          </div>
+          <div class="actions">
+            <button id="claimButton" type="button" disabled>Claim proof badge</button>
+            <button id="useDeniedWallet" type="button" class="secondary">Use denied wallet</button>
+            <button id="resetButton" type="button" class="quiet">Reset</button>
+          </div>
+        </div>
+
+        <div class="badge-panel" aria-live="polite">
+          <div class="badge-art">
+            <span>GasKit</span>
+            <strong>Launch Proof</strong>
+            <small>IOTA testnet badge</small>
+          </div>
+          <div class="status-card">
+            <h2 data-status-title>Wallet not connected</h2>
+            <p data-status-text>Connect a wallet-like test address to start the claim flow.</p>
+            <p class="live-note" data-live-status>Live testnet unavailable by default; mock mode is safe for public preview.</p>
+            <div class="result">
+              <code data-digest></code>
+              <a data-explorer target="_blank" rel="noreferrer"></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="timeline" aria-label="Sponsorship progress timeline">
+        <div data-step="checking-sponsorship-policy" data-status="pending">
+          <span>1</span>
+          <p>checking-sponsorship-policy</p>
+          <strong>Policy preflight</strong>
+        </div>
+        <div data-step="gas-reserved" data-status="pending">
+          <span>2</span>
+          <p>gas-reserved</p>
+          <strong>Gas reserved</strong>
+        </div>
+        <div data-step="waiting-for-user-signature" data-status="pending">
+          <span>3</span>
+          <p>waiting-for-user-signature</p>
+          <strong>User signs</strong>
+        </div>
+        <div data-step="executing-sponsored-transaction" data-status="pending">
+          <span>4</span>
+          <p>executing-sponsored-transaction</p>
+          <strong>Sponsored execute</strong>
+        </div>
+        <div data-step="success-with-digest" data-status="pending">
+          <span>5</span>
+          <p>success-with-digest</p>
+          <strong>Digest</strong>
+        </div>
+      </section>
+
+      <section class="info-grid">
+        <article>
+          <h2>How it works</h2>
+          <ol>
+            <li>Browser asks the backend whether sponsorship is allowed.</li>
+            <li>Backend calls GasKit <code>simulatePolicy()</code>.</li>
+            <li>Backend reserves gas with GasKit.</li>
+            <li>User signs the transaction.</li>
+            <li>Backend executes the sponsored transaction through GasKit.</li>
+            <li>GasKit returns a safe digest/result.</li>
+          </ol>
+        </article>
+        <article>
+          <h2>Safety</h2>
+          <ul>
+            <li>App key stays server-side.</li>
+            <li>Sponsor credentials stay server-side.</li>
+            <li>Browser never calls IOTA Gas Station directly.</li>
+            <li>Policy limits package, function, wallet, and gas budget.</li>
+            <li>Logs and responses must not expose secrets.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="state-bank" aria-label="Implemented UI states">
+        <span>wallet-not-connected</span>
+        <span>wallet-connected</span>
+        <span>checking-sponsorship-policy</span>
+        <span>policy-rejected</span>
+        <span>gas-reserved</span>
+        <span>waiting-for-user-signature</span>
+        <span>executing-sponsored-transaction</span>
+        <span>success-with-digest</span>
+        <span>failed-safe-error</span>
+        <span>live-testnet-unavailable</span>
+        <span>mock-local-mode-active</span>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

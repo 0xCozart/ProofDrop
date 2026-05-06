@@ -1,0 +1,14 @@
+apps:
+  proofdrop:
+    api_key_name: proofdrop-app-key
+    status: active
+    daily_budget_iota: 1
+    daily_request_limit: 250
+    max_requests_per_wallet_per_day: 3
+    max_gas_budget_per_tx: 50000000
+    allowed_packages:
+      - "0xPROOFDROP_PACKAGE"
+    allowed_functions:
+      - "claim_proof_badge"
+    denied_wallets:
+      - "0xDENIED_PROOFDROP_WALLET"

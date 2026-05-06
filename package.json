@@ -1,0 +1,28 @@
+{
+  "name": "gasless-proofdrop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Public GasKit showcase dApp for claiming an IOTA testnet proof badge with sponsored gas.",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc -p tsconfig.json",
+    "test": "node --import tsx --test src/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "secrets:scan": "tsx scripts/scan-secrets.ts",
+    "verify": "npm test && npm run typecheck && npm run secrets:scan"
+  },
+  "dependencies": {
+    "@iota-gaskit/sdk": "file:../iota-gaskit/packages/sdk",
+    "@iota-gaskit/shared-types": "file:../iota-gaskit/packages/shared-types"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
