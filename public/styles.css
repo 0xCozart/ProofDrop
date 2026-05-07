@@ -81,62 +81,24 @@ body {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.7;
-}
-
-.aurora {
-  position: fixed;
-  inset: -10vmax;
-  z-index: 0;
-  pointer-events: none;
-  filter: blur(70px) saturate(140%);
   opacity: 0.55;
 }
 
+/* Static aurora — painted once, no infinite filter animation. */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40vmax 40vmax at 8% 8%, rgba(34, 211, 238, 0.22), transparent 60%),
+    radial-gradient(46vmax 46vmax at 100% 18%, rgba(99, 102, 241, 0.22), transparent 60%),
+    radial-gradient(38vmax 38vmax at 60% 110%, rgba(94, 234, 212, 0.16), transparent 60%);
+  opacity: 0.85;
+}
+
 .aurora span {
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  mix-blend-mode: screen;
-  animation: drift 28s ease-in-out infinite;
-}
-
-.aurora span:nth-child(1) {
-  top: -8%;
-  left: -6%;
-  width: 46vmax;
-  height: 46vmax;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.55), transparent 60%);
-}
-
-.aurora span:nth-child(2) {
-  top: 30%;
-  right: -10%;
-  width: 50vmax;
-  height: 50vmax;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.55), transparent 60%);
-  animation-duration: 34s;
-  animation-delay: -8s;
-}
-
-.aurora span:nth-child(3) {
-  bottom: -18%;
-  left: 25%;
-  width: 42vmax;
-  height: 42vmax;
-  background: radial-gradient(circle, rgba(94, 234, 212, 0.4), transparent 60%);
-  animation-duration: 40s;
-  animation-delay: -14s;
-}
-
-@keyframes drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(6vmax, -4vmax, 0) scale(1.08);
-  }
+  display: none;
 }
 
 .grid-overlay {
@@ -182,8 +144,7 @@ body {
 .brand-mark {
   width: 34px;
   height: 34px;
-  filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.55));
-  animation: spin 18s linear infinite;
+  animation: spin 24s linear infinite;
 }
 
 @keyframes spin {
@@ -299,12 +260,9 @@ body {
   position: relative;
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(20, 32, 58, 0.8), rgba(10, 16, 32, 0.65)),
-    var(--panel);
+    linear-gradient(180deg, rgba(20, 32, 58, 0.92), rgba(10, 16, 32, 0.88));
   border: 1px solid var(--line);
   box-shadow: var(--shadow-lg), var(--shadow-glow);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 
 .panel::before {
@@ -416,22 +374,9 @@ h1 span {
 
 h1 .grad {
   background: var(--grad-iota);
-  background-size: 220% 220%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 7s ease-in-out infinite;
-  filter: drop-shadow(0 6px 28px rgba(34, 211, 238, 0.25));
-}
-
-@keyframes shimmer {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
 }
 
 .lede {
@@ -559,22 +504,10 @@ button:focus-visible {
 button.primary,
 .cta {
   background: var(--grad-iota);
-  background-size: 200% 200%;
   color: #001018;
   box-shadow:
     0 10px 30px -10px rgba(34, 211, 238, 0.55),
     inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-  animation: ctaShift 8s ease-in-out infinite;
-}
-
-@keyframes ctaShift {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
 }
 
 button.primary {
@@ -696,23 +629,12 @@ button:disabled .cta-shine {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(2px 2px at 12% 22%, rgba(255, 255, 255, 0.6), transparent 40%),
-    radial-gradient(1.5px 1.5px at 80% 12%, rgba(255, 255, 255, 0.55), transparent 40%),
-    radial-gradient(2px 2px at 30% 80%, rgba(255, 255, 255, 0.5), transparent 40%),
-    radial-gradient(1.5px 1.5px at 70% 70%, rgba(255, 255, 255, 0.5), transparent 40%),
-    radial-gradient(1.5px 1.5px at 90% 60%, rgba(255, 255, 255, 0.55), transparent 40%);
-  opacity: 0.6;
-  animation: starfield 9s linear infinite;
-}
-
-@keyframes starfield {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.85;
-  }
+    radial-gradient(2px 2px at 12% 22%, rgba(255, 255, 255, 0.55), transparent 40%),
+    radial-gradient(1.5px 1.5px at 80% 12%, rgba(255, 255, 255, 0.5), transparent 40%),
+    radial-gradient(2px 2px at 30% 80%, rgba(255, 255, 255, 0.45), transparent 40%),
+    radial-gradient(1.5px 1.5px at 70% 70%, rgba(255, 255, 255, 0.45), transparent 40%),
+    radial-gradient(1.5px 1.5px at 90% 60%, rgba(255, 255, 255, 0.5), transparent 40%);
+  opacity: 0.55;
 }
 
 .badge-stage {
@@ -743,15 +665,16 @@ button:disabled .cta-shine {
   );
   -webkit-mask: radial-gradient(circle, transparent 47%, #000 49%, #000 50%, transparent 52%);
   mask: radial-gradient(circle, transparent 47%, #000 49%, #000 50%, transparent 52%);
-  filter: blur(0.5px);
-  animation: spin 12s linear infinite;
+  animation: spin 18s linear infinite;
+  will-change: transform;
 }
 
 .orbit-b {
   width: 64%;
   aspect-ratio: 1;
   border: 1px dashed rgba(94, 234, 212, 0.45);
-  animation: spin 24s linear infinite reverse;
+  animation: spin 36s linear infinite reverse;
+  will-change: transform;
 }
 
 .orbit-c {
@@ -773,7 +696,7 @@ button:disabled .cta-shine {
     transparent 70%
   );
   filter: blur(20px);
-  animation: pulse 4s ease-in-out infinite;
+  opacity: 0.85;
 }
 
 @keyframes pulse {
@@ -808,17 +731,6 @@ button:disabled .cta-shine {
   box-shadow:
     0 22px 60px -10px rgba(34, 211, 238, 0.55),
     inset 0 0 28px rgba(34, 211, 238, 0.18);
-  animation: bob 6s ease-in-out infinite;
-}
-
-@keyframes bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
 }
 
 .badge-core span {
@@ -851,44 +763,47 @@ button:disabled .cta-shine {
   color: var(--muted);
 }
 
+.badge-particles {
+  display: none;
+}
+
+/* Particles only appear and animate during the active execution beat. */
+body[data-state="executing-sponsored-transaction"] .badge-particles,
+body[data-state="success-with-digest"] .badge-particles {
+  display: block;
+}
+
 .badge-particles i {
   position: absolute;
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: var(--teal-2);
-  box-shadow: 0 0 12px var(--teal-2);
   opacity: 0;
 }
 
-.badge-particles i:nth-child(1) { top: 18%; left: 24%; animation: float 5s ease-in-out infinite; }
-.badge-particles i:nth-child(2) { top: 30%; right: 18%; animation: float 6s ease-in-out infinite 0.6s; }
-.badge-particles i:nth-child(3) { bottom: 22%; left: 30%; animation: float 7s ease-in-out infinite 1.1s; }
-.badge-particles i:nth-child(4) { bottom: 18%; right: 26%; animation: float 5.5s ease-in-out infinite 1.5s; }
-.badge-particles i:nth-child(5) { top: 50%; left: 12%; animation: float 6.4s ease-in-out infinite 0.3s; }
-.badge-particles i:nth-child(6) { top: 56%; right: 12%; animation: float 5.8s ease-in-out infinite 1.8s; }
+body[data-state="executing-sponsored-transaction"] .badge-particles i,
+body[data-state="success-with-digest"] .badge-particles i {
+  animation: float 6s ease-in-out infinite;
+}
+
+.badge-particles i:nth-child(1) { top: 18%; left: 24%; animation-delay: 0s; }
+.badge-particles i:nth-child(2) { top: 30%; right: 18%; animation-delay: 0.6s; }
+.badge-particles i:nth-child(3) { bottom: 22%; left: 30%; animation-delay: 1.1s; }
+.badge-particles i:nth-child(4) { bottom: 18%; right: 26%; animation-delay: 1.5s; }
+.badge-particles i:nth-child(5) { top: 50%; left: 12%; animation-delay: 0.3s; }
+.badge-particles i:nth-child(6) { top: 56%; right: 12%; animation-delay: 1.8s; }
 
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-18px);
-    opacity: 0.9;
-  }
-  80% {
-    opacity: 0.4;
-  }
+  0%, 100% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translateY(-18px); opacity: 0.9; }
+  80% { opacity: 0.4; }
 }
 
 /* badge state effects */
 body[data-state="executing-sponsored-transaction"] .orbit-a {
-  animation-duration: 4s;
+  animation-duration: 6s;
 }
 
 body[data-state="success-with-digest"] .badge-art::after {
@@ -919,7 +834,7 @@ body[data-state="success-with-digest"] .badge-art::after {
 }
 
 body[data-state="success-with-digest"] .badge-core {
-  animation: bob 6s ease-in-out infinite, victory 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: victory 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes victory {
@@ -1094,8 +1009,7 @@ body[data-state="success-with-digest"] .timeline-spark { width: 100%; }
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(20, 32, 58, 0.55), rgba(8, 14, 28, 0.5));
-  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(20, 32, 58, 0.85), rgba(8, 14, 28, 0.85));
   transition: border-color 250ms, background 250ms, transform 250ms;
 }
 
@@ -1169,6 +1083,8 @@ body[data-state="success-with-digest"] .timeline-spark { width: 100%; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  content-visibility: auto;
+  contain-intrinsic-size: 360px;
 }
 
 .info-grid article {
@@ -1245,6 +1161,8 @@ body[data-state="success-with-digest"] .timeline-spark { width: 100%; }
   font-size: 0.82rem;
   letter-spacing: 0.04em;
   border-top: 1px solid var(--line);
+  content-visibility: auto;
+  contain-intrinsic-size: 40px;
 }
 
 .dot-sep {
@@ -1322,6 +1240,10 @@ body[data-state="live-testnet-unavailable"] .status-card {
   }
 
   .timeline-rail {
+    display: none;
+  }
+
+  .tangle {
     display: none;
   }
 }
