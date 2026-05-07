@@ -10,9 +10,9 @@ apps:
     daily_request_limit: 250
     max_requests_per_wallet_per_day: 3
     max_gas_budget_per_tx: 50000000
-    # Mock/default package ID. Replace with the deployed testnet package for live mode.
+    # Deployed IOTA testnet package for ProofDrop's live M1 badge claim.
     allowed_packages:
-      - "0xPROOFDROP_PACKAGE"
+      - "0xd35b2cda222b21fcc7b6c46b00a5a172023d3de1f20c94a5ac553e290cf5f032"
     # ProofDrop's intended badge-claim function.
     allowed_functions:
       - "claim_proof_badge"

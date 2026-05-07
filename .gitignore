@@ -6,6 +6,7 @@ dist/
 npm-debug.log*
 coverage/
 tmp/
+move/**/build/
 .DS_Store
 
 # apex-workflow:start

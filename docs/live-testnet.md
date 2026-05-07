@@ -2,20 +2,40 @@
 
 ## Current status
 
-Mock mode is complete, safe, and default. ProofDrop can generate a real IOTA SDK-derived ephemeral server-side demo signer. Live mode is scaffolded, but live ProofDrop testnet execution has not been proven yet.
+Mock mode is complete, safe, and default. ProofDrop can generate a real IOTA SDK-derived ephemeral server-side demo signer.
 
-ProofDrop should not be treated as the final live M1 proof until it produces a public IOTA testnet digest from a real badge-claim transaction.
+Live ProofDrop testnet execution has been proven through a configured GasKit gateway, self-hosted Gas Station, and a deployed ProofDrop Move target.
 
-## Required before live ProofDrop
+Recorded live proof:
 
-1. Deploy a real IOTA testnet Move package/function for `claim_proof_badge`.
-2. Update the ProofDrop policy allowlist with the real package ID, module, and function.
-3. Run a GasKit policy gateway with a ProofDrop app key.
-4. Put official IOTA Gas Station behind GasKit.
-5. Configure operator-owned testnet sponsor credentials outside this repo.
-6. Build real transaction bytes for the badge claim using `package::module::function`.
-7. Use the constrained server-side ephemeral demo signer for operator-only demos, or add real browser wallet connection and user signing.
-8. Execute successfully and record the public digest here.
+- Date: 2026-05-07 UTC.
+- Package: `0xd35b2cda222b21fcc7b6c46b00a5a172023d3de1f20c94a5ac553e290cf5f032`.
+- Module/function: `proofdrop_badge::claim_proof_badge`.
+- Execution digest: `E2KywfWKNt43mZ69rsDDYS9UBGM1RGYvFsABnhvP3qo8`.
+- Explorer: `https://explorer.iota.org/txblock/E2KywfWKNt43mZ69rsDDYS9UBGM1RGYvFsABnhvP3qo8?network=testnet`.
+- RPC verification: status `success`, Move call target matched the package/module/function above, one `ProofBadge` object was created, and one `ProofBadgeClaimed` event was emitted.
+- Signing path: server-side ephemeral demo signer, kept in process memory and consumed after execute.
+
+Real browser wallet connection and user-owned signing remain future work.
+
+## Live ProofDrop requirements
+
+Completed for the recorded live proof:
+
+- Deployed IOTA testnet Move package/function for `claim_proof_badge`.
+- ProofDrop policy allowlist updated with the deployed package and function.
+- GasKit policy gateway running with a server-side ProofDrop app key.
+- IOTA Gas Station running behind GasKit.
+- Operator-owned testnet sponsor credentials configured outside this repo.
+- Real transaction bytes built for `package::module::function`.
+- Constrained server-side ephemeral demo signer used for the operator demo path.
+- Successful execute recorded with a public testnet digest.
+
+Still future work:
+
+- Real browser wallet connection.
+- User-owned wallet signing instead of the server-side ephemeral demo signer.
+- Production hosting, monitoring, and persistence around the live demo service.
 
 ## Safety rules
 
@@ -49,21 +69,11 @@ Operator live-demo shape, only on a trusted server:
 ```bash
 PROOFDROP_MODE=live \
 PROOFDROP_DEMO_SIGNER_ENABLED=true \
-PROOFDROP_PACKAGE_ID=<deployed-package-id> \
-PROOFDROP_MODULE_NAME=<module-name> \
+PROOFDROP_PACKAGE_ID=0xd35b2cda222b21fcc7b6c46b00a5a172023d3de1f20c94a5ac553e290cf5f032 \
+PROOFDROP_MODULE_NAME=proofdrop_badge \
 PROOFDROP_FUNCTION_NAME=claim_proof_badge \
 GASKIT_GATEWAY_URL=http://127.0.0.1:8787 \
 GASKIT_PROOFDROP_APP_KEY=<server-side-app-key> \
 IOTA_RPC_URL=https://api.testnet.iota.cafe \
 npm run dev
 ```
-
-Before marking live proof complete, record:
-
-- deployed package ID;
-- allowed module and function;
-- GasKit gateway environment used, without secrets;
-- transaction construction path;
-- signing path;
-- final public testnet digest;
-- date of execution.

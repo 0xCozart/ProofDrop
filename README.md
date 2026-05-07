@@ -6,9 +6,11 @@ ProofDrop is intentionally kept outside the GasKit core repository. It shows how
 
 ## M1 status
 
-ProofDrop is useful for GasKit M1 as an external showcase of the integration pattern. Mock mode is complete, safe, and default. The app can generate a backend-owned ephemeral IOTA testnet signer for controlled demo flows. Live testnet execution is scaffolded but not proven from ProofDrop yet.
+ProofDrop is useful for GasKit M1 as an external showcase of the integration pattern. Mock mode is complete, safe, and default. The app can generate a backend-owned ephemeral IOTA testnet signer for controlled demo flows.
 
-Do not describe ProofDrop as the completed live M1 testnet proof until it targets a deployed `claim_proof_badge` package/module/function, executes through a configured GasKit gateway, and records a public testnet digest. The current ephemeral demo signer is server-side; real browser wallet connection and user-owned signing remain future work.
+Live ProofDrop testnet execution has been proven for the deployed `proofdrop_badge::claim_proof_badge` target through a configured GasKit gateway and self-hosted Gas Station. The recorded public testnet digest is `E2KywfWKNt43mZ69rsDDYS9UBGM1RGYvFsABnhvP3qo8`.
+
+The current live proof uses the constrained server-side ephemeral demo signer. Real browser wallet connection and user-owned signing remain future work.
 
 ## Quickstart
 
@@ -40,7 +42,6 @@ It does not prove:
 
 - live wallet signing;
 - browser wallet connection;
-- public proof that the deployed `claim_proof_badge` Move call executed on testnet;
 - official Gas Station availability;
 - sponsor wallet funding;
 - live testnet transaction digest.
@@ -53,7 +54,7 @@ Live mode is opt-in only and should run only on a trusted server.
 PROOFDROP_MODE=live
 GASKIT_GATEWAY_URL=https://your-gaskit-gateway.example
 GASKIT_PROOFDROP_APP_KEY=replace-with-server-side-proofdrop-app-key
-PROOFDROP_PACKAGE_ID=replace-with-deployed-testnet-package
+PROOFDROP_PACKAGE_ID=0xd35b2cda222b21fcc7b6c46b00a5a172023d3de1f20c94a5ac553e290cf5f032
 PROOFDROP_MODULE_NAME=proofdrop_badge
 PROOFDROP_FUNCTION_NAME=claim_proof_badge
 PROOFDROP_MAX_GAS_BUDGET=50000000

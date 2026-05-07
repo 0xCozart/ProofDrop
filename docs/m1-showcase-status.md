@@ -11,19 +11,18 @@ ProofDrop is the external user-facing showcase dApp for the GasKit M1 integratio
 - Policy rejection path.
 - Safe response projection.
 - Local verification and CI reviewer path.
+- Deployed ProofDrop Move target: `0xd35b2cda222b21fcc7b6c46b00a5a172023d3de1f20c94a5ac553e290cf5f032::proofdrop_badge::claim_proof_badge`.
+- Successful live ProofDrop sponsored testnet execution through GasKit/Gas Station.
+- Public testnet digest: `E2KywfWKNt43mZ69rsDDYS9UBGM1RGYvFsABnhvP3qo8`.
 
-## Remaining for live testnet proof
+## Remaining after M1 live proof
 
-- Real Move package/function.
-- Deployed `claim_proof_badge` package/module/function.
-- Successful live transaction construction against the deployed target.
 - Real browser wallet connection and user-owned signing.
-- Live GasKit gateway configuration.
-- Public testnet digest from ProofDrop.
+- Production hosting, persistence, monitoring, and operator runbooks for a public live deployment.
 
 ## Reviewer use today
 
-Run `npm run verify`, inspect the backend-owned sponsorship boundary, and treat ProofDrop as an external mock showcase of how an app integrates with GasKit.
+Run `npm run verify`, inspect the backend-owned sponsorship boundary, and use the recorded digest above as the ProofDrop live testnet evidence.
 
 ## GasKit connection
 
