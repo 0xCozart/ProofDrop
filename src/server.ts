@@ -4,8 +4,9 @@ import { extname, join, normalize } from "node:path";
 
 import { createProofDropApiFromEnv } from "./api.js";
 
-const publicDir = new URL("../public/", import.meta.url);
+const publicDir = join(process.cwd(), "public");
 const port = Number(process.env.PROOFDROP_PORT ?? "4177");
+const bindHost = process.env.PROOFDROP_HOST ?? "127.0.0.1";
 const api = createProofDropApiFromEnv(process.env);
 
 const contentTypes: Record<string, string> = {
@@ -50,8 +51,8 @@ async function sendResponse(nodeResponse: ServerResponse, response: Response): P
 async function staticResponse(pathname: string): Promise<Response> {
   const safePath = pathname === "/" ? "/index.html" : pathname;
   const normalized = normalize(safePath).replace(/^(\.\.[/\\])+/, "");
-  const filePath = join(publicDir.pathname, normalized);
-  if (!filePath.startsWith(publicDir.pathname)) {
+  const filePath = join(publicDir, normalized);
+  if (!filePath.startsWith(publicDir)) {
     return new Response("Not found", { status: 404 });
   }
 
@@ -82,6 +83,6 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`Gasless ProofDrop listening on http://127.0.0.1:${port}`);
+server.listen(port, bindHost, () => {
+  console.log(`Gasless ProofDrop listening on http://${bindHost}:${port}`);
 });
