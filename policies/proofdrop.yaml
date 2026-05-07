@@ -1,7 +1,7 @@
 apps:
   proofdrop:
     # Example app ID used by ProofDrop's GasKit policy gateway config.
-    # Replace placeholders before any live testnet run.
+    # Replace the app key binding outside this repo before any live testnet run.
     api_key_name: proofdrop-app-key
     status: active
     # Small example daily spend cap for the demo app.
@@ -11,6 +11,7 @@ apps:
     max_requests_per_wallet_per_day: 3
     max_gas_budget_per_tx: 50000000
     # Deployed IOTA testnet package for ProofDrop's live M1 badge claim.
+    # Latest hosted proof: https://proofdrop.xyz
     allowed_packages:
       - "0xd35b2cda222b21fcc7b6c46b00a5a172023d3de1f20c94a5ac553e290cf5f032"
     # ProofDrop's intended badge-claim function.
