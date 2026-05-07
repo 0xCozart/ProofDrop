@@ -12,14 +12,14 @@
         <div class="claim-copy">
           <p class="mode" data-mode-label data-state="mock-local-mode-active">Mock/local mode active</p>
           <h1 id="title">Gasless ProofDrop</h1>
-          <p class="lede">Claim an IOTA testnet proof badge without holding IOTA. You sign; GasKit sponsors the gas.</p>
+          <p class="lede">Preview a gasless IOTA proof badge claim. The demo can generate a server-side ephemeral testnet signer; real browser wallet signing is a future milestone.</p>
           <div class="wallet-panel">
-            <label for="walletAddress">Wallet connection state</label>
+            <label for="walletAddress">Wallet or test address</label>
             <div class="wallet-row">
-              <input id="walletAddress" name="walletAddress" autocomplete="off" placeholder="0x wallet address" />
-              <button id="connectWallet" type="button">Connect mock wallet</button>
+              <input id="walletAddress" name="walletAddress" autocomplete="off" placeholder="0x testnet address" />
+              <button id="connectWallet" type="button">Generate demo signer</button>
             </div>
-            <p data-wallet-status>wallet-not-connected</p>
+            <p data-wallet-status>No wallet connected</p>
           </div>
           <div class="actions">
             <button id="claimButton" type="button" disabled>Claim proof badge</button>
@@ -35,8 +35,8 @@
             <small>IOTA testnet badge</small>
           </div>
           <div class="status-card">
-            <h2 data-status-title>Wallet not connected</h2>
-            <p data-status-text>Connect a wallet-like test address to start the claim flow.</p>
+            <h2 data-status-title>No wallet connected</h2>
+            <p data-status-text>Enter a testnet address or generate an ephemeral server-side demo signer to start the claim flow.</p>
             <p class="live-note" data-live-status>Live testnet unavailable by default; mock mode is safe for public preview.</p>
             <div class="result">
               <code data-digest></code>
@@ -81,7 +81,7 @@
             <li>Browser asks the backend whether sponsorship is allowed.</li>
             <li>Backend calls GasKit <code>simulatePolicy()</code>.</li>
             <li>Backend reserves gas with GasKit.</li>
-            <li>User signs the transaction.</li>
+            <li>The backend signs only the short-lived demo transaction when the demo signer path is used.</li>
             <li>Backend executes the sponsored transaction through GasKit.</li>
             <li>GasKit returns a safe digest/result.</li>
           </ol>
@@ -93,7 +93,7 @@
             <li>Sponsor credentials stay server-side.</li>
             <li>Browser never calls IOTA Gas Station directly.</li>
             <li>Policy limits package, function, wallet, and gas budget.</li>
-            <li>Logs and responses must not expose secrets.</li>
+            <li>Real browser wallet signing is future live-mode work.</li>
           </ul>
         </article>
       </section>

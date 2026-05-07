@@ -10,12 +10,13 @@
     "build": "tsc -p tsconfig.json",
     "test": "node --import tsx --test src/*.test.ts",
     "typecheck": "tsc --noEmit",
+    "smoke:mock": "tsx scripts/smoke-mock.ts",
     "secrets:scan": "tsx scripts/scan-secrets.ts",
-    "verify": "npm test && npm run typecheck && npm run secrets:scan"
+    "verify": "npm test && npm run typecheck && npm run build && npm run smoke:mock && npm run secrets:scan"
   },
   "dependencies": {
-    "@iota-gaskit/sdk": "file:../iota-gaskit/packages/sdk",
-    "@iota-gaskit/shared-types": "file:../iota-gaskit/packages/shared-types"
+    "@iota/bcs": "^1.6.0",
+    "@iota/iota-sdk": "^1.13.0"
   },
   "devDependencies": {
     "@types/node": "^20.17.0",

@@ -9,10 +9,11 @@ const forbiddenPatterns: Array<[RegExp, string]> = [
   [/iotaprivkey[1-9A-HJ-NP-Za-km-z]{20,}/, "IOTA private key"],
   [/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/, "private key block"],
   [/(?:mnemonic|seed[_-]?phrase)\s*[:=]/i, "wallet mnemonic or seed phrase"],
+  [/\b(?:api[_-]?key|bearer[_-]?token|auth[_-]?token|jwt[_-]?secret|keypair|private[_-]?key)\s*[:=]\s*["'](?!replace-with|placeholder|redacted|mock|example)[A-Za-z0-9._~+/=-]{24,}["']/i, "credential literal"],
 ];
 
 const credentialAssignment =
-  /^\s*(?:[A-Z0-9_]*(?:API_KEY|BEARER_TOKEN|JWT_SECRET|PRIVATE_KEY|KEYPAIR|AUTH)[A-Z0-9_]*)\s*=\s*(?!replace-with|placeholder|redacted)([A-Za-z0-9._~+/=-]{20,})\s*$/i;
+  /^\s*(?:[A-Z0-9_]*(?:API_KEY|BEARER_TOKEN|AUTH_TOKEN|JWT_SECRET|PRIVATE_KEY|KEYPAIR|AUTH)[A-Z0-9_]*)\s*=\s*(?!replace-with|placeholder|redacted|mock|example)([A-Za-z0-9._~+/=-]{20,})\s*$/i;
 
 async function* walk(dir: string): AsyncGenerator<string> {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -29,6 +30,10 @@ const findings: string[] = [];
 for await (const file of walk(root)) {
   const relative = file.slice(root.length);
   if (allowedFiles.has(relative)) continue;
+  if (/^\.env(?:\.|$)/.test(relative)) {
+    findings.push(`${relative}: .env files must not be committed or scanned as project input`);
+    continue;
+  }
   const fileStat = await stat(file);
   if (fileStat.size > 1_000_000) continue;
   const text = await readFile(file, "utf8").catch(() => "");

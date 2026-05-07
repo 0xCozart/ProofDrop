@@ -1,145 +1,160 @@
 # Gasless ProofDrop
 
-Gasless ProofDrop is a standalone public showcase dApp for GasKit. A visitor claims a "GasKit Launch Proof" badge on IOTA testnet without holding IOTA tokens. The visitor still signs the transaction, and the app server owns the GasKit sponsorship boundary.
+Gasless ProofDrop is a standalone public showcase dApp for IOTA GasKit. It demonstrates a gasless "GasKit Launch Proof" badge-claim flow where the app backend owns the sponsorship boundary and the browser never receives a GasKit app key or sponsor credentials.
 
-The default mode is local/mock mode. It proves the full frontend/backend/GasKit-shaped flow without sponsor keys, live IOTA RPC, or the official Gas Station.
+ProofDrop is intentionally kept outside the GasKit core repository. It shows how an external app can integrate with GasKit-style sponsorship APIs without becoming part of the GasKit toolkit itself.
 
-## Architecture Flow
+## M1 status
 
-```text
-browser claim UI
-  -> POST /api/sponsorship/simulate
-  -> app server calls GasKit simulatePolicy()
-  -> POST /api/sponsorship/reserve
-  -> app server calls simulatePolicy(), then reserveGas()
-  -> browser mock-signing boundary
-  -> POST /api/sponsorship/execute
-  -> app server calls executeSponsoredTransaction()
-  -> safe digest/result response
-```
+ProofDrop is useful for GasKit M1 as an external showcase of the integration pattern. Mock mode is complete, safe, and default. The app can generate a backend-owned ephemeral IOTA testnet signer for controlled demo flows. Live testnet execution is scaffolded but not proven from ProofDrop yet.
 
-The browser never receives the GasKit app key, sponsor credentials, raw upstream bodies, transaction bytes from upstream, or user signatures in responses.
+Do not describe ProofDrop as the completed live M1 testnet proof until it targets a deployed `claim_proof_badge` package/module/function, executes through a configured GasKit gateway, and records a public testnet digest. The current ephemeral demo signer is server-side; real browser wallet connection and user-owned signing remain future work.
 
-## Dependency Strategy
-
-GasKit packages are not assumed to be published on npm. This demo uses local file dependencies by default:
-
-```json
-"@iota-gaskit/sdk": "file:../iota-gaskit/packages/sdk",
-"@iota-gaskit/shared-types": "file:../iota-gaskit/packages/shared-types"
-```
-
-If GasKit packages are published later, replace those entries with the published versions and run the same verification commands.
-
-## Local Setup
+## Quickstart
 
 ```bash
 npm install
+npm run verify
 npm run dev
 ```
 
 Open `http://127.0.0.1:4177`.
 
-## Env Vars
+## Mock mode
 
-Copy the placeholder template only if you need to change defaults:
+Mock mode is the default and requires no Docker, sponsor key, live IOTA RPC, official Gas Station, or published GasKit packages.
 
-```bash
-cp .env.example .env
-```
+It proves:
 
-Important variables:
+- UI state transitions for the badge-claim flow;
+- generation of a real IOTA SDK-derived ephemeral testnet demo signer address;
+- backend-owned GasKit-shaped calls: `simulatePolicy()`, `reserveGas()`, and `executeSponsoredTransaction()`;
+- backend-owned demo signer flow through `POST /api/sponsorship/demo-execute`;
+- policy preflight and policy rejection;
+- reservation and execute response shapes;
+- safe digest projection;
+- no app key or sponsor credentials in browser code;
+- no raw upstream bodies, transaction bytes, or user signatures in public responses.
 
-- `PROOFDROP_MODE=mock|live`
-- `PROOFDROP_PORT=4177`
-- `PROOFDROP_PACKAGE_ID=0xPROOFDROP_PACKAGE`
-- `PROOFDROP_FUNCTION_NAME=claim_proof_badge`
-- `PROOFDROP_MAX_GAS_BUDGET=50000000`
-- `PROOFDROP_EXPLORER_BASE_URL=https://explorer.iota.org/txblock`
-- `GASKIT_GATEWAY_URL`
-- `GASKIT_PROOFDROP_APP_KEY`
+It does not prove:
 
-`.env` is ignored and must not be committed.
+- live wallet signing;
+- browser wallet connection;
+- public proof that the deployed `claim_proof_badge` Move call executed on testnet;
+- official Gas Station availability;
+- sponsor wallet funding;
+- live testnet transaction digest.
 
-## Mock Mode
+## Live mode
 
-Mock mode is the hosted default and is safe for public preview:
-
-- no sponsor key required;
-- no live IOTA RPC required;
-- no official Gas Station required;
-- denied wallet example: `0xDENIED_PROOFDROP_WALLET`;
-- package allowlist: `0xPROOFDROP_PACKAGE`;
-- function allowlist: `claim_proof_badge`;
-- max gas budget: `50000000`.
-
-Mock mode proves UI state transitions, request validation, server-owned GasKit call shape, policy rejection shape, reservation shape, execute shape, and safe response projection.
-
-It does not prove live wallet signing, live IOTA transaction construction, official Gas Station reachability, sponsor wallet funding, or live testnet execution.
-
-## Live Testnet Mode
-
-Live mode is opt-in only on a trusted server:
+Live mode is opt-in only and should run only on a trusted server.
 
 ```env
 PROOFDROP_MODE=live
 GASKIT_GATEWAY_URL=https://your-gaskit-gateway.example
 GASKIT_PROOFDROP_APP_KEY=replace-with-server-side-proofdrop-app-key
 PROOFDROP_PACKAGE_ID=replace-with-deployed-testnet-package
+PROOFDROP_MODULE_NAME=proofdrop_badge
 PROOFDROP_FUNCTION_NAME=claim_proof_badge
 PROOFDROP_MAX_GAS_BUDGET=50000000
+PROOFDROP_DEMO_SIGNER_ENABLED=false
+IOTA_RPC_URL=https://api.testnet.iota.cafe
 ```
 
 If `PROOFDROP_MODE=live` is set without usable server-side GasKit credentials, the API fails closed with `LIVE_TESTNET_UNAVAILABLE`.
 
-Do not run live mode automatically in CI or public preview deployments. Do not enable it until the policy gateway has strict package/function allowlists, low gas budget, per-wallet limits, daily request limits, and operator-owned testnet sponsor credentials.
+`PROOFDROP_DEMO_SIGNER_ENABLED=true` is required before the server-side demo signer can execute live sponsored transactions. Keep it disabled on public hosts until the gateway, Gas Station, package/module/function allowlist, request caps, and operator-owned testnet credentials are ready.
 
-## Public Hosting
+See [docs/live-testnet.md](docs/live-testnet.md) for the live readiness checklist.
 
-The safe hosted default is mock mode or disabled-live mode. Public deployments should not include sponsor credentials unless intentionally running a controlled testnet demo.
+## GasKit dependency strategy
 
-For public hosting:
+Mock mode has no dependency on unpublished GasKit npm packages. The API defines a local adapter contract and uses a fully local mock client for the default reviewer path. ProofDrop does depend on the public IOTA SDK to generate real ephemeral demo signer addresses, but mock verification does not contact IOTA RPC or Gas Station.
 
-- keep `PROOFDROP_MODE=mock`, or set `PROOFDROP_MODE=live` only with full policy controls;
-- never expose `GASKIT_PROOFDROP_APP_KEY` to frontend JavaScript;
-- never put Gas Station bearer tokens, sponsor keys, private keys, mnemonics, or exported keypairs in this repo;
-- keep `.env` ignored;
-- run `npm run verify` before publishing.
+Live mode dynamically loads the GasKit SDK only when live mode is configured. By default it tries `@iota-gaskit/sdk`; set `GASKIT_SDK_MODULE` to point at a locally built SDK module if packages are not published yet. A reachable GasKit gateway and server-side ProofDrop app key are still required.
 
-## Safety Rules
+## Security model
 
 - App key stays server-side.
 - Sponsor credentials stay server-side.
-- Browser never calls IOTA Gas Station directly.
-- Policy limits package, function, wallet, and gas budget.
-- Logs and responses must not expose secrets, transaction bytes, user signatures, sponsor key material, or raw upstream bodies.
+- Package and function targets are server-owned through `PROOFDROP_PACKAGE_ID` and `PROOFDROP_FUNCTION_NAME`.
+- Move module is server-owned through `PROOFDROP_MODULE_NAME`.
+- Browser requests may include `walletAddress` and optional `gasBudget`; browser-supplied `packageId` or `functionName` is rejected.
+- Browser receives only `demoSessionId` and the public ephemeral address for the demo signer. Signing material stays in process memory, is short-lived, and is consumed after successful demo execute.
+- Public responses never include raw upstream bodies, transaction bytes, user signatures, gas coin internals, sponsor keys, bearer tokens, or app credentials.
+- `.env` is ignored; `.env.example` contains placeholders only.
 
 ## Verification
 
 ```bash
 npm test
 npm run typecheck
+npm run smoke:mock
 npm run secrets:scan
 npm run verify
 ```
 
-What is proven locally:
+`npm run smoke:mock` runs a deterministic reviewer path and should print:
 
-- `POST /api/sponsorship/simulate` validates input and calls `simulatePolicy()`;
-- `POST /api/sponsorship/reserve` validates input, calls `simulatePolicy()`, then `reserveGas()`;
-- `POST /api/sponsorship/execute` validates signed payload shape and calls `executeSponsoredTransaction()`;
-- SDK auth, policy, and upstream errors map to safe public responses;
-- mock happy path proves simulate -> reserve -> execute;
-- frontend includes all major required UI states.
+```text
+ProofDrop mock smoke passed: simulate -> reserve -> execute returned 0xMOCK_PROOFDROP_DIGEST.
+```
 
-What remains unproven until live testnet:
+CI runs `npm ci` and `npm run verify` without secrets or live services.
 
-- official IOTA wallet signing;
-- real transaction byte construction for `claim_proof_badge`;
-- deployed Move package/function behavior;
-- official Gas Station reserve/execute availability;
-- real sponsored testnet digest from this app.
+## API routes
 
-## Next Step For Live Testnet
+- `GET /api/health`
+- `GET /api/demo-address`
+- `POST /api/sponsorship/simulate`
+- `POST /api/sponsorship/reserve`
+- `POST /api/sponsorship/execute`
+- `POST /api/sponsorship/demo-execute`
 
-Deploy or identify the testnet Move package/function for `claim_proof_badge`, configure the GasKit policy allowlist in `policies/proofdrop.yaml` with that package ID, then enable `PROOFDROP_MODE=live` only on a trusted server with `GASKIT_GATEWAY_URL` and server-side `GASKIT_PROOFDROP_APP_KEY`.
+Simulate and reserve accept:
+
+```json
+{
+  "demoSessionId": "demo_optional-for-ephemeral-signer",
+  "walletAddress": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "gasBudget": 50000000
+}
+```
+
+`GET /api/demo-address` returns a fresh ephemeral server-side demo signer session:
+
+```json
+{
+  "demoSessionId": "demo_...",
+  "address": "0x...",
+  "network": "iota-testnet",
+  "ephemeral": true,
+  "signingAvailable": true,
+  "expiresInSecs": 600
+}
+```
+
+It does not connect a browser wallet and never returns signing material.
+
+Future milestone: add real browser wallet connection and user-owned signature flow.
+
+Execute accepts:
+
+```json
+{
+  "reservationId": "proofdrop-mock-reservation-1",
+  "gasKitTransactionId": "proofdrop-mock-tx-1",
+  "transactionBytes": "mock-proofdrop-transaction-bytes",
+  "userSignature": "mock-proofdrop-user-signature"
+}
+```
+
+The demo signer path accepts only reservation identifiers and signs internally:
+
+```json
+{
+  "demoSessionId": "demo_...",
+  "reservationId": "proofdrop-mock-reservation-1",
+  "gasKitTransactionId": "proofdrop-mock-tx-1"
+}
+```

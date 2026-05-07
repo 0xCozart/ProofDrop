@@ -1,14 +1,21 @@
 apps:
   proofdrop:
+    # Example app ID used by ProofDrop's GasKit policy gateway config.
+    # Replace placeholders before any live testnet run.
     api_key_name: proofdrop-app-key
     status: active
+    # Small example daily spend cap for the demo app.
     daily_budget_iota: 1
+    # Example request caps. These are reviewer-safe defaults, not production sizing.
     daily_request_limit: 250
     max_requests_per_wallet_per_day: 3
     max_gas_budget_per_tx: 50000000
+    # Mock/default package ID. Replace with the deployed testnet package for live mode.
     allowed_packages:
       - "0xPROOFDROP_PACKAGE"
+    # ProofDrop's intended badge-claim function.
     allowed_functions:
       - "claim_proof_badge"
+    # Deterministic denied-wallet path for tests and reviewer demos.
     denied_wallets:
       - "0xDENIED_PROOFDROP_WALLET"

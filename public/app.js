@@ -1,7 +1,7 @@
 const proofdrop = {
+  mode: "mock",
   walletAddress: "",
-  packageId: "0xPROOFDROP_PACKAGE",
-  functionName: "claim_proof_badge",
+  demoSessionId: "",
   gasBudget: 50000000,
   reservation: null,
 };
@@ -65,8 +65,7 @@ async function postJson(path, body) {
 
 async function loadHealth() {
   const health = await fetch("/api/health").then((response) => response.json());
-  proofdrop.packageId = health.packageId;
-  proofdrop.functionName = health.functionName;
+  proofdrop.mode = health.mode === "live" ? "live" : "mock";
   els.mode.textContent = health.mode === "live" ? "Live testnet mode" : "Mock/local mode active";
   els.mode.dataset.state = health.mode === "live" ? "live" : "mock-local-mode-active";
   els.live.textContent = health.liveAvailable
@@ -77,26 +76,45 @@ async function loadHealth() {
   }
 }
 
-function setWallet(address) {
+function setWallet(address, source = "manual") {
   proofdrop.walletAddress = address;
+  if (source !== "generated") proofdrop.demoSessionId = "";
   els.walletInput.value = address;
-  els.wallet.textContent = address ? `Wallet connected: ${address}` : "Wallet not connected";
+  els.wallet.textContent = address
+    ? `${source === "generated" ? "Ephemeral demo signer" : "Test address"} selected: ${address}`
+    : "No wallet connected";
   els.claim.disabled = !address;
   setState(
     address ? "wallet-connected" : "wallet-not-connected",
-    address ? "Wallet connected" : "Wallet not connected",
+    address ? (source === "generated" ? "Ephemeral server-side demo signer ready" : "Test address selected") : "No wallet connected",
     address
-      ? "Ready to check ProofDrop sponsorship policy."
-      : "Connect a wallet-like test address to start the claim flow.",
+      ? "No browser wallet is connected. Server signs only this demo transaction if live mode is configured."
+      : "Enter a testnet address or generate an ephemeral server-side demo signer to start the claim flow.",
   );
+}
+
+async function generateDemoAddress() {
+  els.connect.disabled = true;
+  try {
+    const response = await fetch("/api/demo-address", { headers: { accept: "application/json" } });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok || typeof body.address !== "string" || typeof body.demoSessionId !== "string") {
+      throw new Error("Demo signer generation failed.");
+    }
+    proofdrop.demoSessionId = body.demoSessionId;
+    setWallet(body.address, "generated");
+  } catch {
+    setState("failed-safe-error", "Failed safely", "Could not generate an ephemeral demo signer.");
+  } finally {
+    els.connect.disabled = false;
+  }
 }
 
 async function claim() {
   const input = {
     walletAddress: proofdrop.walletAddress,
-    packageId: proofdrop.packageId,
-    functionName: proofdrop.functionName,
     gasBudget: proofdrop.gasBudget,
+    ...(proofdrop.demoSessionId ? { demoSessionId: proofdrop.demoSessionId } : {}),
   };
 
   els.claim.disabled = true;
@@ -118,20 +136,29 @@ async function claim() {
       return;
     }
     proofdrop.reservation = reservation;
-    setState("gas-reserved", "Gas reserved", `Reservation ${reservation.reservationId} is ready for a user signature.`);
+    setState("gas-reserved", "Gas reserved", `Reservation ${reservation.reservationId} is ready for the signing step.`);
 
-    setState("waiting-for-user-signature", "Waiting for user signature", "Mock signing is local-only. It does not prove live wallet signing.");
-    await new Promise((resolve) => setTimeout(resolve, 450));
-    const transactionBytes = "mock-proofdrop-transaction-bytes";
-    const userSignature = "mock-proofdrop-user-signature";
-
-    setState("executing-sponsored-transaction", "Executing sponsored transaction", "The backend calls GasKit execute with the reservation and user signature.");
-    const executed = await postJson("/api/sponsorship/execute", {
-      reservationId: reservation.reservationId,
-      gasKitTransactionId: reservation.gasKitTransactionId,
-      transactionBytes,
-      userSignature,
-    });
+    let executed;
+    if (proofdrop.demoSessionId) {
+      setState("waiting-for-user-signature", "Demo signer ready", "No browser wallet is connected. The backend holds the short-lived demo signer.");
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      setState("executing-sponsored-transaction", "Executing sponsored transaction", "The backend signs and calls GasKit execute without exposing transaction bytes or signatures.");
+      executed = await postJson("/api/sponsorship/demo-execute", {
+        demoSessionId: proofdrop.demoSessionId,
+        reservationId: reservation.reservationId,
+        gasKitTransactionId: reservation.gasKitTransactionId,
+      });
+    } else {
+      setState("waiting-for-user-signature", "Waiting for user signature", "Mock signing is local-only. It does not prove live wallet signing.");
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      setState("executing-sponsored-transaction", "Executing sponsored transaction", "The backend calls GasKit execute with the reservation and mock signature.");
+      executed = await postJson("/api/sponsorship/execute", {
+        reservationId: reservation.reservationId,
+        gasKitTransactionId: reservation.gasKitTransactionId,
+        transactionBytes: "mock-proofdrop-transaction-bytes",
+        userSignature: "mock-proofdrop-user-signature",
+      });
+    }
 
     setState("success-with-digest", "Badge claim complete", "GasKit returned a safe sponsored execution result.");
     els.digest.textContent = executed.digest || "Digest unavailable in this mode";
@@ -151,7 +178,7 @@ async function claim() {
   }
 }
 
-els.connect.addEventListener("click", () => setWallet("0xPROOFDROP_VISITOR"));
+els.connect.addEventListener("click", generateDemoAddress);
 els.denied.addEventListener("click", () => setWallet("0xDENIED_PROOFDROP_WALLET"));
 els.walletInput.addEventListener("input", (event) => setWallet(event.target.value.trim()));
 els.claim.addEventListener("click", claim);

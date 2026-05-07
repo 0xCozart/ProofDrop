@@ -7,3 +7,9 @@ npm-debug.log*
 coverage/
 tmp/
 .DS_Store
+
+# apex-workflow:start
+# Apex Workflow local artifacts
+tmp/apex-workflow/
+tmp/agent-browser/
+# apex-workflow:end
