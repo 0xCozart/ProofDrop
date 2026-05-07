@@ -130,7 +130,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px 16px;
 }
 
 .brand {
@@ -213,27 +214,74 @@ body {
   color: var(--gold);
 }
 
+.topbar-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.topbar-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--line-strong);
+  margin: 0 2px;
+}
+
 .repo-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(13, 22, 41, 0.55);
   color: var(--muted);
   text-decoration: none;
   font-size: 0.82rem;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color 200ms, border-color 200ms, background 200ms,
+    transform 160ms, box-shadow 200ms;
 }
 
 .repo-link:hover {
   color: var(--ink);
+  border-color: rgba(94, 234, 212, 0.5);
+  background: rgba(34, 211, 238, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -10px rgba(34, 211, 238, 0.55);
+  text-decoration: none;
 }
 
-.repo-link .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--teal-2);
-  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.18);
-  animation: blink 2.4s ease-in-out infinite;
+.repo-link:focus-visible {
+  outline: 2px solid var(--teal-2);
+  outline-offset: 2px;
+}
+
+.repo-mark {
+  width: 16px;
+  height: 16px;
+  color: var(--teal-2);
+  flex-shrink: 0;
+  transition: color 200ms, transform 200ms;
+}
+
+.repo-link:hover .repo-mark {
+  color: var(--aqua);
+  transform: rotate(-6deg) scale(1.05);
+}
+
+.repo-arrow {
+  font-size: 0.78rem;
+  color: var(--dim);
+  transition: transform 200ms, color 200ms;
+}
+
+.repo-link:hover .repo-arrow {
+  color: var(--teal-2);
+  transform: translate(2px, -2px);
 }
 
 @keyframes blink {
@@ -1249,9 +1297,13 @@ body[data-state="live-testnet-unavailable"] .status-card {
 }
 
 @media (max-width: 560px) {
-  .topbar {
-    flex-wrap: wrap;
-    gap: 10px;
+  .topbar-nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .topbar-sep {
+    display: none;
   }
 
   .timeline {
